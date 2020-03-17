@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name                = "launch-debug"
-s.version             = "1.0.6"
+s.version             = "1.0.5"
 s.summary             = "Add Marketo Mobile Engagement to your project."
 s.description         = <<-DESC
                             MarketoPod provides the following features:
