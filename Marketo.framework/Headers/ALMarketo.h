@@ -1,21 +1,24 @@
 //
-// Marketo.h
+//  MarketoExtension.h
+//  Marketo
 //
-// Marketo Mobile Engagement framework
+//  Created by Mahesh.Bijapur on 3/27/19.
+//  Copyright © 2019 Zubhium. All rights reserved.
 //
-// Copyright (c) 2007-2016, Marketo, Inc. All rights reserved.
 
-/*!
- * @header Marketo.h
- * @discussion The Marketo class is used to initialize the Marketo SDK.
- */
-
-#import <Marketo/MKTSecuritySignature.h>
-#import <Marketo/MarketoActionMetaData.h>
-#import <Marketo/MarketoLead.h>
+#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <Marketo/MarketoLead.h>
+#import <Marketo/MarketoActionMetaData.h>
+#import <Marketo/MKTSecuritySignature.h>
 #import <UserNotifications/UserNotifications.h>
-@interface Marketo : NSObject
+
+NS_ASSUME_NONNULL_BEGIN
+
+static NSString *const kALAppSecret = @"almkto.AppSecret";
+static NSString *const kALMunchkinID = @"almkto.Munchkin";
+
+@interface ALMarketo : NSObject
 
 /*!
  * Returns the App Secret used to initialize Marketo SDK.
@@ -26,14 +29,25 @@
  * Returns a singleton that is an instance of Marketo SDK.
  * @return Singleton instance of class Marketo.
  */
-+ (Marketo *)sharedInstance;
++ (ALMarketo *)sharedInstance;
+
+/*!
+ * This API is called the internal extension should be registered
+ */
++ (void) registerExtension;
+
+/*!
+ * Initializes Marketo SDK. This method will be called as soon as we recieve the configurations from Launch.
+ * @param launchOptions Used for push handling notifications.
+ */
+-(void)initializeMarketo:(nullable NSDictionary *)launchOptions;
 
 /*!
  * Initializes Marketo SDK. This method should be called before calling any other Marketo SDK method.
  * @param appSecret An app secret used to initialize the app
  * @param munchkinID Used to connect to marketo end-point
  */
-- (void)initializeWithMunchkinID:(NSString *)munchkinID appSecret:(NSString *)appSecret launchOptions:(NSDictionary *)launchOptions;
+- (void)initializeWithMunchkinID:(nullable NSString *)munchkinID appSecret:(nullable NSString *)appSecret launchOptions:(nullable NSDictionary *)launchOptions;
 
 /*!
  * The timeout interval, in seconds. If during a connection attempt the request remains idle for longer
@@ -41,19 +55,6 @@
  * The default timeout interval is 10 seconds.
  */
 - (void)setTimeoutInterval:(NSInteger)seconds;
-
-/*!
- * Reports an action to the Marketo server
- * @param actionName The action to be reported
- * @param metaData Optional - Use the setter methods to send metadata
- *           ex:-     {
- *            			"Action Type":"Shopping",
- *            			"Action Details":"RedShirt",
- *            			"Action Metric":10,
- *                      "Action Length":30
- *           			}
- */
-- (void)reportAction:(NSString *)actionName withMetaData:(MarketoActionMetaData *)metaData;
 
 /*!
  * This function updates a single lead record from Marketo.
@@ -82,6 +83,20 @@
 - (void)trackPushNotification:(NSDictionary *)userInfo;
 
 /*!
+ * Reports an action to the Marketo server
+ * @param actionName The action to be reported
+ * @param metaData Optional - Use the setter methods to send metadata
+ *           ex:-     {
+ *                        "Action Type":"Shopping",
+ *                        "Action Details":"RedShirt",
+ *                        "Action Metric":10,
+ *                      "Action Length":30
+ *                       }
+ */
+- (void)reportAction:(NSString *)actionName withMetaData:(MarketoActionMetaData *)metaData;
+
+
+/*!
  * This function allows you to handle a push notificaiton appropriatly.
  * @param userInfo Dictionary containing push payload
  */
@@ -103,11 +118,12 @@
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation;
 
 /*!
-* Override System's didReceiveLocalNotification method to Operate PushNotification
-* @param application The singleton app object
+ * Override System's didReceiveLocalNotification method to Operate PushNotification
+ * @param application The singleton app object
  * @param notification UILocalNotification object supplied by the source app.
-*/
+ */
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification;
+
 
 /*!
  * Override System's userNotificationCenter method to Operate PushNotification
@@ -118,6 +134,7 @@
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
 didReceiveNotificationResponse:(UNNotificationResponse *)response
          withCompletionHandler:(void(^)())completionHandler;
+
 /*!
  * Set security Signature for Authentication
  * @param token - The Security Token recived from client server
@@ -153,4 +170,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
  */
 - (id)init __attribute__ ((unavailable ("cannot use init for this class, use +(Marketo*)sharedInstance instead")));
 
+
 @end
+
+NS_ASSUME_NONNULL_END
